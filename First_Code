@@ -1,0 +1,30 @@
+from pytube import YouTube
+import subprocess
+import os
+
+
+def Downloader():
+    DownloadPath = os.path.expanduser("~") + "/Downloads/"
+    link = input('Enter The link\n')
+    vid = YouTube(link)
+    res = str(input("res"))
+
+    streem = vid.streams.filter(res=res + 'p', file_extension='mp4').first()
+    streem.download(filename=vid.title + '1')
+    st = vid.streams.filter(only_audio=True).first()
+    st.download(filename=vid.title + '2')
+
+    vid_name = st.default_filename.split(".")
+    subprocess.call(['ffmpeg', '-i', vid_name[0] + '2.mp4', vid_name[0] + '.mp3'])
+
+    subprocess.call(['ffmpeg', '-i', vid_name[0] + '1.mp4', '-i', vid_name[0] + '.mp3', '-c:v', 'copy', '-c:a', 'aac',
+                     DownloadPath + vid_name[0] + '.mp4'])
+    os.remove(vid_name[0] + '1.mp4')
+    os.remove(vid_name[0] + '2.mp4')
+    os.remove(vid_name[0] + '.mp3')
+
+
+
+
+
+Downloader()
